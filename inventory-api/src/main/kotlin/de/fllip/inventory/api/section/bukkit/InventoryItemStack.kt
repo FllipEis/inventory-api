@@ -44,8 +44,10 @@ import java.util.*
  */
 class InventoryItemStack(
     material: Material,
-    amount: Int = 1
+    amount: Int
 ) : ItemStack(material, amount) {
+
+    constructor(material: Material): this(material, 1)
 
     companion object {
         fun fromItemStack(itemStack: ItemStack?): InventoryItemStack? {
