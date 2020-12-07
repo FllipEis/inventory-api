@@ -46,16 +46,16 @@ public class JavaInventoryConfiguration extends AbstractInventoryConfiguration {
     public void configure() {
         configureTitlePlaceholder(new PlaceholderReplacement("name", (player, inventory) -> player.getName()));
 
-        configureSection("skull", new SectionConfigurator()
+        configureSection("bottle", new SectionConfigurator()
                 .withEventHandler(result -> {
-                    result.getPlayer().sendMessage("§7Folgt mir auf Twitter: §b§l_Fllip");
+                    result.getPlayer().sendMessage("§7Clicked");
 
                     return InventoryClickResult.DENY_GRABBING;
                 })
                 .withPlaceholder(new PlaceholderReplacement("currentPage", (player, inventory) -> String.valueOf(inventory.getCurrentPage())))
         );
 
-        configureSection("groupTest", new SectionConfigurator()
+        configureSection("groupExample", new SectionConfigurator()
                 .withGroupItems(player -> {
                     List<InventoryItemStack> items = Lists.newArrayList();
 
@@ -73,10 +73,10 @@ public class JavaInventoryConfiguration extends AbstractInventoryConfiguration {
                 .withDynamicItem((inventory, player) -> {
                     if (!inventory.hasPreviousPage()) {
                         return new InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
-                                .withDisplayName("§cVorherige Seite");
+                                .withDisplayName("§cPrevious page");
                     } else {
                         return new InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
-                                .withDisplayName("§aVorherige Seite");
+                                .withDisplayName("§aPrevious page");
                     }
                 })
                 .withEventHandler(result -> {
@@ -95,10 +95,10 @@ public class JavaInventoryConfiguration extends AbstractInventoryConfiguration {
                 .withDynamicItem((inventory, player) -> {
                     if (!inventory.hasPreviousPage()) {
                         return new InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
-                                .withDisplayName("§cNächste Seite");
+                                .withDisplayName("§cNext page");
                     } else {
                         return new InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
-                                .withDisplayName("§aVorherige");
+                                .withDisplayName("§aNext page");
                     }
                 })
                 .withEventHandler(result -> {

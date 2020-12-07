@@ -45,9 +45,9 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             player.name
         })
 
-        configureSection("skull", SectionConfigurator()
+        configureSection("bottle", SectionConfigurator()
             .withEventHandler {
-                it.player.sendMessage("§7Folgt mir auf Twitter: §b§l_Fllip")
+                it.player.sendMessage("§7Clicked")
                 InventoryClickResult.DENY_GRABBING
             }
             .withPlaceholder(PlaceholderReplacement("currentPage") { _, inventory ->
@@ -55,7 +55,7 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             })
         )
 
-        configureSection("groupTest", SectionConfigurator()
+        configureSection("groupExample", SectionConfigurator()
             .withGroupItems {
                 val items = Lists.newArrayList<InventoryItemStack>()
 
@@ -73,10 +73,10 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             .withDynamicItem { inventory, player ->
                 if (!inventory.hasPreviousPage()) {
                     return@withDynamicItem InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
-                        .withDisplayName("§cVorherige Seite")
+                        .withDisplayName("§cPrevious page")
                 } else {
                     return@withDynamicItem InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
-                        .withDisplayName("§aVorherige Seite")
+                        .withDisplayName("§aPrevious page")
                 }
             }
             .withEventHandler {
@@ -95,10 +95,10 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             .withDynamicItem { inventory, player ->
                 if (!inventory.hasNextPage()) {
                     return@withDynamicItem InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
-                        .withDisplayName("§cNächste Seite")
+                        .withDisplayName("§cNext page")
                 } else {
                     return@withDynamicItem InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
-                        .withDisplayName("§aNächste Seite")
+                        .withDisplayName("§aNext page")
                 }
             }
             .withEventHandler {

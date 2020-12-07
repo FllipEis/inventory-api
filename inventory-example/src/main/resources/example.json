@@ -1,9 +1,9 @@
 {
-  "title": "Test {name}",
+  "title": "Hello {name}",
   "type": "GENERIC_9X6",
   "pagination": {
     "enabled": true,
-    "groupIdentifier": "groupTest"
+    "groupIdentifier": "groupExample"
   },
   "sections": [
     {
@@ -14,21 +14,19 @@
     },
     {
       "type": "STATIC",
-      "material": "PLAYER_HEAD",
-      "displayName": "§b§l_Fllip",
+      "material": "GLASS_BOTTLE",
+      "displayName": "§b§lGlass bottle",
       "amount": 1,
-      "loreLines": ["§7Folgt mir auf Twitter", "§7Seite: §b§l{currentPage}"],
+      "loreLines": ["§7Page: §b§l{currentPage}"],
       "slots": [4],
-      "identifier": "skull",
-      "extras": {
-        "SKULL_TEXTURE": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M3NDVhMDZmNTM3YWVhODA1MDU1NTkxNDllYTE2YmQ0YTg0ZDQ0OTFmMTIyMjY4MThjMzg4MWMwOGU4NjBmYyJ9fX0="
-      }
+      "identifier": "bottle",
+      "extras": {}
     },
     {
       "type": "GROUP",
       "slotRange": true,
       "slots": [20, 24, 29, 33],
-      "identifier": "groupTest"
+      "identifier": "groupExample"
     },
     {
       "type": "DYNAMIC",
