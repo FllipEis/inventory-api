@@ -15,7 +15,7 @@ A file based inventory api for minecraft.
 	}
 
     dependencies {  
-	  compile('com.github.FllipEis.inventory-api:inventory:VERSION')  
+	  compile('com.github.FllipEis.inventory-api:inventory-api:VERSION')  
 	}
 
 **Maven:**
@@ -32,7 +32,7 @@ A file based inventory api for minecraft.
 
 	<dependency>
 	   <groupId>com.github.FllipEis.inventory-api</groupId>
-	   <artifactId>inventory</artifactId>
+	   <artifactId>inventory-api</artifactId>
 	   <version>VERSION</version>
 	</dependency>
 You can find the latest version [here](https://jitpack.io/#FllipEis/inventory-api)
