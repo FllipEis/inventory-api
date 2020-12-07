@@ -35,4 +35,4 @@ A file based inventory api for minecraft.
 	   <artifactId>invnentory.api</artifactId>
 	   <version>VERSION</version>
 	</dependency>
-You can find the latest version [here](https://jitpack.io/#FllipEis/inventory-api)
+You can find the latest version [here](https://jitpack.io/#FllipEis/inventory-api).
