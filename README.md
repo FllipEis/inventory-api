@@ -82,7 +82,7 @@ You have a few options:
 		  }));
 
 
- - DynamicItem:
+ - Dynamic item:
 	
 	If you don't want to add the item information, for example the display name, in the inventory file you can use a dynamic section and apply all information in the code.
 	 
