@@ -40,7 +40,6 @@ enum class InventoryType(
     GENERIC_9X4(9 * 4),
     GENERIC_9X5(9 * 5),
     GENERIC_9X6(9 * 6),
-    GENERIC_3X3(9 * 7),
     NONE(0)
 
 }
