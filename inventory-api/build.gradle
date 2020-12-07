@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
-
 plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
