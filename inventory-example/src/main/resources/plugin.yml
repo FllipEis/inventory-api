@@ -1,0 +1,6 @@
+name: InventoryExample
+author: Fllip
+version: 1.0
+api-version: 1.13
+
+main: de.fllip.inventory.example.ExamplePlugin

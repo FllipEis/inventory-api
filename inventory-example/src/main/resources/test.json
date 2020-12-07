@@ -1,0 +1,44 @@
+{
+  "title": "Test {name}",
+  "type": "GENERIC_9X6",
+  "pagination": {
+    "enabled": true,
+    "groupIdentifier": "groupTest"
+  },
+  "sections": [
+    {
+      "type": "PLACEHOLDER",
+      "material": "BLACK_STAINED_GLASS_PANE",
+      "slotRange": true,
+      "slots": [0, 8, 46, 52]
+    },
+    {
+      "type": "STATIC",
+      "material": "PLAYER_HEAD",
+      "displayName": "§b§l_Fllip",
+      "amount": 1,
+      "loreLines": ["§7Folgt mir auf Twitter", "§7Seite: §b§l{currentPage}"],
+      "slots": [4],
+      "identifier": "skull",
+      "extras": {
+        "SKULL_TEXTURE": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M3NDVhMDZmNTM3YWVhODA1MDU1NTkxNDllYTE2YmQ0YTg0ZDQ0OTFmMTIyMjY4MThjMzg4MWMwOGU4NjBmYyJ9fX0="
+      }
+    },
+    {
+      "type": "GROUP",
+      "slotRange": true,
+      "slots": [20, 24, 29, 33],
+      "identifier": "groupTest"
+    },
+    {
+      "type": "DYNAMIC",
+      "slots": [45],
+      "identifier": "paginationPrevious"
+    },
+    {
+      "type": "DYNAMIC",
+      "slots": [53],
+      "identifier": "paginationNext"
+    }
+  ]
+}
