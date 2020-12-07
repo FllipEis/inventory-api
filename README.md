@@ -1,7 +1,8 @@
 # inventory-api
 A file based inventory api for minecraft.
 
-[![Release](https://jitpack.io/v/FllipEis/inventory-api.svg)](https://jitpack.io/#FllipEis/inventory-api)
+![JitPack version](https://jitpack.io/v/FllipEis/inventory-api.svg)
+[![Release](https://jitpack.io/v/FllipEis/inventory-api.svg)]
 
 
 ### 🛠  Development
@@ -15,7 +16,7 @@ A file based inventory api for minecraft.
 	}
 
     dependencies {  
-	  compile('de.fllip:inventory-api:VERSION')  
+	  compile('com.github.FllipEis.inventory-api:inventory:VERSION')  
 	}
 
 **Maven:**
@@ -31,8 +32,8 @@ A file based inventory api for minecraft.
 	</repositories>
 
 	<dependency>
-	   <groupId>de.fllip</groupId>
-	   <artifactId>invnentory.api</artifactId>
+	   <groupId>com.github.FllipEis.inventory-api</groupId>
+	   <artifactId>inventory</artifactId>
 	   <version>VERSION</version>
 	</dependency>
-You can find the latest version [here](https://jitpack.io/#FllipEis/inventory-api).
+You can find the latest version [here](https://jitpack.io/#FllipEis/inventory-api)
