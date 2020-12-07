@@ -1,6 +1,7 @@
 # inventory-api
 A file based inventory api for minecraft.
 
+[![Release](https://jitpack.io/v/FllipEis/inventory-api.svg)](https://jitpack.io/#FllipEis/inventory-api)
 
 
 ### 🛠  Development
