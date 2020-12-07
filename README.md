@@ -48,7 +48,7 @@ To initialize the api you have to call the init method:
 
 For every inventory file you have to create an inventory in your plugin.
 
-    InventoryAPI.getInstance().getInventoryCreator().createInventory("inventoryName", new YourCustomInventoryConfiguration())
+    InventoryAPI.getInstance().getInventoryCreator().createInventory("inventoryName", new YourCustomInventoryConfiguration());
 
 **Inventory configuration:**
 
