@@ -55,6 +55,20 @@ public class JavaInventoryConfiguration extends AbstractInventoryConfiguration {
                 .withPlaceholder(new PlaceholderReplacement("currentPage", (player, inventory) -> String.valueOf(inventory.getCurrentPage())))
         );
 
+        configureSection("stateExample", new SectionConfigurator()
+                .withEventHandler(result -> {
+                    result.getPlayer().playSound(result.getPlayer().getLocation(), Sound.BLOCK_LAVA_POP, 1F, 5F);
+
+                    return InventoryClickResult.DENY_GRABBING;
+                })
+                .withFirstState(player -> {
+                    return "on";
+                })
+                .withStateHandler(result -> {
+                    result.getPlayer().sendMessage("§7State changed: §b§l${result.changedState}");
+                })
+        );
+
         configureSection("groupExample", new SectionConfigurator()
                 .withGroupItems(player -> {
                     List<InventoryItemStack> items = Lists.newArrayList();

@@ -55,8 +55,7 @@ class PlaceholderInventorySection(
 
         val inventorySlots = if (slotRange) {
             slots.chunked(2)
-                .map { IntRange(it.first(), it.last()).toList() }
-                .flatten()
+                .flatMap { IntRange(it.first(), it.last()).toList() }
         } else slots
 
         inventorySlots.forEach {

@@ -29,6 +29,7 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import de.fllip.inventory.api.creator.InventoryCreator
 import de.fllip.inventory.api.creator.InventoryInformation
+import de.fllip.inventory.api.section.state.InventoryStateHelper
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.java.JavaPlugin
@@ -52,7 +53,7 @@ class InventoryService @Inject constructor(
         openInventory(player, inventoryName, null)
     }
 
-    fun openInventory(player: Player, inventoryName: String, page: Int? ) {
+    fun openInventory(player: Player, inventoryName: String, page: Int?) {
         val inventoryInformation =
             creator.inventories.firstOrNull { it.inventoryName.equals(inventoryName, true) } ?: return
         val inventory = getInventory(player, inventoryName) ?: createBukkitInventory(player, inventoryInformation)
@@ -88,6 +89,7 @@ class InventoryService @Inject constructor(
 
     fun destroyInventoriesOfPlayer(player: Player) {
         inventories.removeIf { it.player == player }
+        InventoryStateHelper.destroyStatesOfPlayer(player)
     }
 
 }

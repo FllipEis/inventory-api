@@ -23,6 +23,34 @@
       "extras": {}
     },
     {
+      "type": "STATE",
+      "slots": [13],
+      "identifier": "stateExample",
+      "states": [
+        {
+          "stateName": "on",
+          "material": "GREEN_DYE",
+          "displayName": "§aOn",
+          "amount": 1,
+          "loreLines": []
+        },
+        {
+          "stateName": "off",
+          "material": "RED_DYE",
+          "displayName": "§cOff",
+          "amount": 1,
+          "loreLines": []
+        },
+        {
+          "stateName": "unset",
+          "material": "ORANGE_DYE",
+          "displayName": "§6Unset",
+          "amount": 1,
+          "loreLines": []
+        }
+      ]
+    },
+    {
       "type": "GROUP",
       "slotRange": true,
       "slots": [20, 24, 29, 33],

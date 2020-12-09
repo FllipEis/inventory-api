@@ -31,6 +31,7 @@ import de.fllip.inventory.api.result.InventoryClickResult
 import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import org.bukkit.Material
 import org.bukkit.Sound
+import java.util.*
 
 /**
  * Created by IntelliJ IDEA.
@@ -55,13 +56,28 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             })
         )
 
+        configureSection("stateExample", SectionConfigurator()
+            .withEventHandler {
+                it.player.playSound(it.player.location, Sound.BLOCK_LAVA_POP, 1F, 5F)
+
+                return@withEventHandler InventoryClickResult.DENY_GRABBING
+            }
+            .withFirstState {
+                return@withFirstState "on"
+            }
+            .withStateHandler {
+                it.player.sendMessage("§7State changed: §b§l${it.changedState}")
+            }
+        )
+
         configureSection("groupExample", SectionConfigurator()
             .withGroupItems {
                 val items = Lists.newArrayList<InventoryItemStack>()
 
-                for (i: Int in 1..100) {
-                    items.add(InventoryItemStack(Material.GLASS_BOTTLE)
-                        .withDisplayName("§b§lLobby-$i")
+                for (i: Int in 1..33) {
+                    items.add(
+                        InventoryItemStack(Material.GLASS_BOTTLE)
+                            .withDisplayName("§b§lLobby-$i")
                     )
                 }
 

@@ -41,6 +41,7 @@ enum class InventorySectionType(
     STATIC(StaticInventorySection::class.java),
     DYNAMIC(DynamicInventorySection::class.java),
     GROUP(GroupInventorySection::class.java),
+    STATE(StateInventorySection::class.java),
     PLACEHOLDER(PlaceholderInventorySection::class.java),
     NONE(EmptyInventorySection::class.java)
 
