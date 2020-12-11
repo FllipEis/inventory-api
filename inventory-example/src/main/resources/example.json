@@ -1,0 +1,70 @@
+{
+  "title": "Hello {name}",
+  "type": "GENERIC_9X6",
+  "pagination": {
+    "enabled": true,
+    "groupIdentifier": "groupExample"
+  },
+  "sections": [
+    {
+      "type": "PLACEHOLDER",
+      "material": "BLACK_STAINED_GLASS_PANE",
+      "slotRange": true,
+      "slots": [0, 8, 46, 52]
+    },
+    {
+      "type": "STATIC",
+      "material": "GLASS_BOTTLE",
+      "displayName": "§b§lGlass bottle",
+      "amount": 1,
+      "loreLines": ["§7Page: §b§l{currentPage}"],
+      "slots": [4],
+      "identifier": "bottle",
+      "extras": {}
+    },
+    {
+      "type": "STATE",
+      "slots": [13],
+      "identifier": "stateExample",
+      "states": [
+        {
+          "stateName": "on",
+          "material": "GREEN_DYE",
+          "displayName": "§aOn",
+          "amount": 1,
+          "loreLines": []
+        },
+        {
+          "stateName": "off",
+          "material": "RED_DYE",
+          "displayName": "§cOff",
+          "amount": 1,
+          "loreLines": []
+        },
+        {
+          "stateName": "unset",
+          "material": "ORANGE_DYE",
+          "displayName": "§6Unset",
+          "amount": 1,
+          "loreLines": []
+        }
+      ]
+    },
+    {
+      "type": "GROUP",
+      "slotRange": true,
+      "slots": [20, 24, 29, 33],
+      "identifier": "groupExample"
+    },
+    {
+      "type": "DYNAMIC",
+      "slots": [45],
+      "identifier": "paginationPrevious"
+    },
+    {
+      "type": "DYNAMIC",
+      "slots": [53],
+      "identifier": "paginationNext"
+    }
+  ]
+}

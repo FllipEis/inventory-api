@@ -51,7 +51,7 @@ class ExamplePlugin : JavaPlugin() {
         InventoryAPI.init(this, DefaultStorageLoader::class.java)
 
         InventoryAPI.instance.inventoryCreator.createInventory(
-            "test",
+            "example",
             InventoryConfiguration()
         )
     }

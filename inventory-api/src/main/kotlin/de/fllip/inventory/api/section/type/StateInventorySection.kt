@@ -26,37 +26,47 @@ package de.fllip.inventory.api.section.type
 
 import de.fllip.inventory.api.creator.AbstractInventoryConfiguration
 import de.fllip.inventory.api.inventory.Inventory
+import de.fllip.inventory.api.replacement.PlaceholderReplacer
 import de.fllip.inventory.api.section.AbstractInventorySection
 import de.fllip.inventory.api.section.InventorySectionType
+import de.fllip.inventory.api.section.bukkit.InventoryItemStack
+import de.fllip.inventory.api.section.state.InventoryStateHelper
+import de.fllip.inventory.api.section.state.InventoryStateInformation
 import org.bukkit.entity.Player
 
 /**
  * Created by IntelliJ IDEA.
  * User: Philipp.Eistrach
- * Date: 04.12.2020
- * Time: 12:13
+ * Date: 08.12.2020
+ * Time: 11:45
  */
-class GroupInventorySection(
+class StateInventorySection(
     identifier: String = "",
-    type: InventorySectionType = InventorySectionType.DYNAMIC,
-    val slotRange: Boolean = false,
-    slots: List<Int> = emptyList()
-) : AbstractInventorySection(identifier, slots, type) {
+    type: InventorySectionType = InventorySectionType.STATE,
+    slots: List<Int> = emptyList(),
+    val states: List<InventoryStateInformation> = emptyList()
+) : AbstractInventorySection(identifier, slots) {
 
     override fun setItem(
         inventory: Inventory,
         player: Player,
         sectionConfigurator: AbstractInventoryConfiguration.SectionConfigurator?
     ) {
-        val items = sectionConfigurator?.groupItems?.invoke(player)
-            ?.map { it.withIdentifier(identifier) } ?: emptyList()
+        val firstState = sectionConfigurator?.firstState?.invoke(player)
 
-        val inventorySlots = if (slotRange) {
-            slots.chunked(2)
-                .flatMap { IntRange(it.first(), it.last()).toList() }
-        } else slots
+        val currentState = InventoryStateHelper.getCurrentState(player, identifier, firstState, states)
 
-        inventory.addGroupItems(identifier, items, inventorySlots)
+        val replacements = sectionConfigurator?.placeholders?: emptyList()
+
+        val item = InventoryItemStack(currentState.material, currentState.amount)
+            .withIdentifier(identifier)
+            .withNBTTag("inventory-item-state", currentState.stateName)
+            .withDisplayName(PlaceholderReplacer.replace(currentState.displayName, player, inventory, replacements))
+            .withLore(currentState.loreLines.map { PlaceholderReplacer.replace(it, player, inventory, replacements) })
+
+        slots.forEach {
+            inventory.setItem(it, item)
+        }
     }
 
 }

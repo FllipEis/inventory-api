@@ -31,6 +31,7 @@ import de.fllip.inventory.api.result.InventoryClickResult
 import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import org.bukkit.Material
 import org.bukkit.Sound
+import java.util.*
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,9 +46,9 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             player.name
         })
 
-        configureSection("skull", SectionConfigurator()
+        configureSection("bottle", SectionConfigurator()
             .withEventHandler {
-                it.player.sendMessage("§7Folgt mir auf Twitter: §b§l_Fllip")
+                it.player.sendMessage("§7Clicked")
                 InventoryClickResult.DENY_GRABBING
             }
             .withPlaceholder(PlaceholderReplacement("currentPage") { _, inventory ->
@@ -55,13 +56,28 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             })
         )
 
-        configureSection("groupTest", SectionConfigurator()
+        configureSection("stateExample", SectionConfigurator()
+            .withEventHandler {
+                it.player.playSound(it.player.location, Sound.BLOCK_LAVA_POP, 1F, 5F)
+
+                return@withEventHandler InventoryClickResult.DENY_GRABBING
+            }
+            .withFirstState {
+                return@withFirstState "on"
+            }
+            .withStateHandler {
+                it.player.sendMessage("§7State changed: §b§l${it.changedState}")
+            }
+        )
+
+        configureSection("groupExample", SectionConfigurator()
             .withGroupItems {
                 val items = Lists.newArrayList<InventoryItemStack>()
 
-                for (i: Int in 1..100) {
-                    items.add(InventoryItemStack(Material.GLASS_BOTTLE)
-                        .withDisplayName("§b§lLobby-$i")
+                for (i: Int in 1..33) {
+                    items.add(
+                        InventoryItemStack(Material.GLASS_BOTTLE)
+                            .withDisplayName("§b§lLobby-$i")
                     )
                 }
 
@@ -73,10 +89,10 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             .withDynamicItem { inventory, player ->
                 if (!inventory.hasPreviousPage()) {
                     return@withDynamicItem InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
-                        .withDisplayName("§cVorherige Seite")
+                        .withDisplayName("§cPrevious page")
                 } else {
                     return@withDynamicItem InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
-                        .withDisplayName("§aVorherige Seite")
+                        .withDisplayName("§aPrevious page")
                 }
             }
             .withEventHandler {
@@ -95,10 +111,10 @@ class InventoryConfiguration : AbstractInventoryConfiguration() {
             .withDynamicItem { inventory, player ->
                 if (!inventory.hasNextPage()) {
                     return@withDynamicItem InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
-                        .withDisplayName("§cNächste Seite")
+                        .withDisplayName("§cNext page")
                 } else {
                     return@withDynamicItem InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
-                        .withDisplayName("§aNächste Seite")
+                        .withDisplayName("§aNext page")
                 }
             }
             .withEventHandler {

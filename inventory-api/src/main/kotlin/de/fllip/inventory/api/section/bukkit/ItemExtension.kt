@@ -36,3 +36,9 @@ import org.bukkit.inventory.ItemStack
 fun ItemStack.toInventoryItemStack(): InventoryItemStack? {
     return InventoryItemStack.fromItemStack(this)
 }
+
+fun InventoryItemStack.isStateItem(): Boolean {
+    val nbtTag = this.getNBTTag("inventory-item-state")
+
+    return nbtTag.isNotBlank()
+}

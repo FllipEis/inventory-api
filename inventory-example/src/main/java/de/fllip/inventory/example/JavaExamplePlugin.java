@@ -42,7 +42,7 @@ public class JavaExamplePlugin extends JavaPlugin {
         InventoryAPI.init(this, DefaultStorageLoader.class);
 
         InventoryAPI.getInstance().getInventoryCreator().createInventory(
-                "inv",
+                "example",
                 new JavaInventoryConfiguration()
         );
     }

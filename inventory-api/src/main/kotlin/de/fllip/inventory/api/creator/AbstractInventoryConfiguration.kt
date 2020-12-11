@@ -27,11 +27,13 @@ package de.fllip.inventory.api.creator
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import de.fllip.inventory.api.inventory.Inventory
-import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import de.fllip.inventory.api.replacement.PlaceholderReplacement
 import de.fllip.inventory.api.result.InventoryClickEventResult
 import de.fllip.inventory.api.result.InventoryClickResult
+import de.fllip.inventory.api.result.InventoryStateSwitchResult
+import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import org.bukkit.entity.Player
+import java.util.function.Consumer
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,13 +62,27 @@ abstract class AbstractInventoryConfiguration {
 
     class SectionConfigurator() {
 
-        val eventHandlers = Lists.newArrayList<(InventoryClickEventResult) -> InventoryClickResult>()
+        var eventHandler: ((InventoryClickEventResult) -> InventoryClickResult)? = null
+        var stateHandler: Consumer<InventoryStateSwitchResult>? = null
+        var firstState: ((Player) -> String)? = null
         var dynamicItem: ((Inventory, Player) -> InventoryItemStack)? = null
         var groupItems: ((Player) -> List<InventoryItemStack>)? = null
-        val placeholders = Lists.newArrayList<PlaceholderReplacement>()
+        val placeholders = Lists.newArrayList<PlaceholderReplacement>()!!
 
         fun withEventHandler(handleEvent: (InventoryClickEventResult) -> InventoryClickResult): SectionConfigurator {
-            eventHandlers.add(handleEvent)
+            eventHandler = handleEvent
+
+            return this
+        }
+
+        fun withStateHandler(handleStateChange: Consumer<InventoryStateSwitchResult>): SectionConfigurator {
+            stateHandler = handleStateChange
+
+            return this
+        }
+
+        fun withFirstState(handleFirstState: (Player) -> String): SectionConfigurator {
+            firstState = handleFirstState
 
             return this
         }

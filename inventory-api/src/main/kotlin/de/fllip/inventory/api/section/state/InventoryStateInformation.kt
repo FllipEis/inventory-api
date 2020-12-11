@@ -22,41 +22,20 @@
  * SOFTWARE.
  */
 
-package de.fllip.inventory.api.section.type
+package de.fllip.inventory.api.section.state
 
-import de.fllip.inventory.api.creator.AbstractInventoryConfiguration
-import de.fllip.inventory.api.inventory.Inventory
-import de.fllip.inventory.api.section.AbstractInventorySection
-import de.fllip.inventory.api.section.InventorySectionType
-import org.bukkit.entity.Player
+import org.bukkit.Material
 
 /**
  * Created by IntelliJ IDEA.
  * User: Philipp.Eistrach
- * Date: 04.12.2020
- * Time: 12:13
+ * Date: 08.12.2020
+ * Time: 11:47
  */
-class GroupInventorySection(
-    identifier: String = "",
-    type: InventorySectionType = InventorySectionType.DYNAMIC,
-    val slotRange: Boolean = false,
-    slots: List<Int> = emptyList()
-) : AbstractInventorySection(identifier, slots, type) {
-
-    override fun setItem(
-        inventory: Inventory,
-        player: Player,
-        sectionConfigurator: AbstractInventoryConfiguration.SectionConfigurator?
-    ) {
-        val items = sectionConfigurator?.groupItems?.invoke(player)
-            ?.map { it.withIdentifier(identifier) } ?: emptyList()
-
-        val inventorySlots = if (slotRange) {
-            slots.chunked(2)
-                .flatMap { IntRange(it.first(), it.last()).toList() }
-        } else slots
-
-        inventory.addGroupItems(identifier, items, inventorySlots)
-    }
-
-}
+data class InventoryStateInformation(
+    val stateName: String = "",
+    val material: Material = Material.AIR,
+    val displayName: String = "",
+    val amount: Int = 1,
+    val loreLines: List<String> = emptyList()
+)

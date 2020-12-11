@@ -28,13 +28,18 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import de.fllip.inventory.api.creator.InventoryCreator
 import de.fllip.inventory.api.inventory.InventoryService
-import de.fllip.inventory.api.section.bukkit.toInventoryItemStack
 import de.fllip.inventory.api.result.InventoryClickEventResult
 import de.fllip.inventory.api.result.InventoryClickResult
+import de.fllip.inventory.api.result.InventoryStateSwitchResult
+import de.fllip.inventory.api.section.bukkit.isStateItem
+import de.fllip.inventory.api.section.bukkit.toInventoryItemStack
+import de.fllip.inventory.api.section.state.InventoryStateHelper
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
@@ -54,8 +59,9 @@ class InventoryListener @Inject constructor(
     fun handleClick(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
         val currentInventoryName = player.getMetadata("current-inventory").firstOrNull()?.asString() ?: return
-        val item = event.currentItem?.toInventoryItemStack() ?: return
-        val inventory = inventoryService.getOpenedInventory(player)?: return
+        val bukkitItem = event.currentItem ?: return
+        val item = bukkitItem.toInventoryItemStack() ?: return
+        val inventory = inventoryService.getOpenedInventory(player) ?: return
 
         val inventoryInformation =
             inventoryCreator.inventories.firstOrNull { it.inventoryName == currentInventoryName } ?: return
@@ -65,15 +71,45 @@ class InventoryListener @Inject constructor(
         val itemIdentifier = inventoryItem.identifier
         val itemConfigurator = inventoryInformation.inventoryConfiguration.getSectionConfigurators()[itemIdentifier]
 
-        itemConfigurator?.eventHandlers?.forEach {
-            val clickResult = it.invoke(InventoryClickEventResult(
+        val clickType = event.click
+        val clickResult = itemConfigurator?.eventHandler?.invoke(
+            InventoryClickEventResult(
                 player,
                 item,
                 inventory,
-                event.click
-            ))
+                clickType
+            )
+        )
 
+
+        if (clickResult != null) {
             event.isCancelled = clickResult == InventoryClickResult.DENY_GRABBING
+        }
+
+        val isStateItem = item.isStateItem()
+
+        if (isStateItem) {
+            var newState = ""
+
+            if (clickType == ClickType.LEFT) {
+                newState = InventoryStateHelper.nextState(player, itemIdentifier)
+            } else {
+                if (clickType == ClickType.RIGHT) {
+                    newState = InventoryStateHelper.previousState(player, itemIdentifier)
+                }
+            }
+
+            if (newState.isNotBlank()) {
+                itemConfigurator?.stateHandler?.accept(
+                    InventoryStateSwitchResult(
+                        player,
+                        newState
+                    )
+                )
+
+                event.isCancelled = true
+                inventory.update()
+            }
         }
     }
 
@@ -83,6 +119,5 @@ class InventoryListener @Inject constructor(
 
         inventoryService.destroyInventoriesOfPlayer(player)
     }
-
 
 }

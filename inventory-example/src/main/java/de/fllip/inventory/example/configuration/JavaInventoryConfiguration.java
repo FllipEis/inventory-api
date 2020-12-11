@@ -24,9 +24,15 @@
 
 package de.fllip.inventory.example.configuration;
 
+import com.google.common.collect.Lists;
 import de.fllip.inventory.api.creator.AbstractInventoryConfiguration;
 import de.fllip.inventory.api.replacement.PlaceholderReplacement;
 import de.fllip.inventory.api.result.InventoryClickResult;
+import de.fllip.inventory.api.section.bukkit.InventoryItemStack;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,13 +44,87 @@ public class JavaInventoryConfiguration extends AbstractInventoryConfiguration {
 
     @Override
     public void configure() {
-        configureSection("test", new SectionConfigurator()
-                .withEventHandler(event -> {
-                    event.getPlayer().sendMessage("Hallo");
+        configureTitlePlaceholder(new PlaceholderReplacement("name", (player, inventory) -> player.getName()));
+
+        configureSection("bottle", new SectionConfigurator()
+                .withEventHandler(result -> {
+                    result.getPlayer().sendMessage("§7Clicked");
 
                     return InventoryClickResult.DENY_GRABBING;
                 })
-                .withPlaceholder(new PlaceholderReplacement("name", (player, inventory) -> String.valueOf(inventory.getCurrentPage())))
+                .withPlaceholder(new PlaceholderReplacement("currentPage", (player, inventory) -> String.valueOf(inventory.getCurrentPage())))
+        );
+
+        configureSection("stateExample", new SectionConfigurator()
+                .withEventHandler(result -> {
+                    result.getPlayer().playSound(result.getPlayer().getLocation(), Sound.BLOCK_LAVA_POP, 1F, 5F);
+
+                    return InventoryClickResult.DENY_GRABBING;
+                })
+                .withFirstState(player -> {
+                    return "on";
+                })
+                .withStateHandler(result -> {
+                    result.getPlayer().sendMessage("§7State changed: §b§l${result.changedState}");
+                })
+        );
+
+        configureSection("groupExample", new SectionConfigurator()
+                .withGroupItems(player -> {
+                    List<InventoryItemStack> items = Lists.newArrayList();
+
+                    for (int i = 1; i <= 100; i++) {
+                        items.add(new InventoryItemStack(Material.GLASS_BOTTLE)
+                                .withDisplayName("§b§lLobby-" + i)
+                        );
+                    }
+
+                    return items;
+                })
+        );
+
+        configureSection("paginationPrevious", new SectionConfigurator()
+                .withDynamicItem((inventory, player) -> {
+                    if (!inventory.hasPreviousPage()) {
+                        return new InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
+                                .withDisplayName("§cPrevious page");
+                    } else {
+                        return new InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
+                                .withDisplayName("§aPrevious page");
+                    }
+                })
+                .withEventHandler(result -> {
+                    if (result.getInventory().hasPreviousPage()) {
+                        result.getInventory().openPreviousPage();
+                        result.getPlayer().playSound(result.getPlayer().getLocation(), Sound.BLOCK_BEEHIVE_ENTER, 1F, 1F);
+                    } else {
+                        result.getPlayer().playSound(result.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 1F, 10F);
+                    }
+
+                    return InventoryClickResult.DENY_GRABBING;
+                })
+        );
+
+        configureSection("paginationNext", new SectionConfigurator()
+                .withDynamicItem((inventory, player) -> {
+                    if (!inventory.hasPreviousPage()) {
+                        return new InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
+                                .withDisplayName("§cNext page");
+                    } else {
+                        return new InventoryItemStack(Material.LIME_STAINED_GLASS_PANE)
+                                .withDisplayName("§aNext page");
+                    }
+                })
+                .withEventHandler(result -> {
+                    if (result.getInventory().hasNextPage()) {
+                        result.getInventory().openNextPage();
+                        result.getPlayer().playSound(result.getPlayer().getLocation(), Sound.BLOCK_BEEHIVE_ENTER, 1F, 1F);
+                    } else {
+                        result.getPlayer().playSound(result.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 1F, 10F);
+                    }
+
+                    return InventoryClickResult.DENY_GRABBING;
+                })
         );
     }
 

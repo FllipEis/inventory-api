@@ -80,15 +80,24 @@ class Inventory(
         player.openInventory(bukkitInventory)
     }
 
+    fun update(page: Int = currentPage) {
+        currentPage = page
+
+        bukkitInventory.clear()
+        setItems()
+
+        player.updateInventory()
+    }
+
     fun openNextPage() {
         if (hasNextPage()) {
-            open(currentPage + 1)
+            update(currentPage + 1)
         }
     }
 
     fun openPreviousPage() {
         if (hasPreviousPage()) {
-            open(currentPage - 1)
+            update(currentPage - 1)
         }
     }
 
@@ -130,6 +139,7 @@ class Inventory(
 
     private fun loadItems(vararg sortByTypes: InventorySectionType) {
         items.clear()
+        groupItems.clear()
 
         val typeList = sortByTypes.toList()
 
