@@ -168,16 +168,16 @@ class Inventory(
                     bukkitInventory.setItem(paginationCache.first.slots[index], item)
                 }
             }
-        } else {
-            groupItems
-                .filter { if (paginationInformation.enabled) it.identifier != paginationInformation.groupIdentifier else true }
-                .forEach { cache ->
-                    cache.slots.forEachIndexed { index, slot ->
-                        val item = cache.items.getOrNull(index) ?: return@forEach
-                        bukkitInventory.setItem(slot, item)
-                    }
-                }
         }
+
+        groupItems
+            .filter { if (paginationInformation.enabled) it.identifier != paginationInformation.groupIdentifier else true }
+            .forEach { cache ->
+                cache.slots.forEachIndexed { index, slot ->
+                    val item = cache.items.getOrNull(index) ?: return@forEach
+                    bukkitInventory.setItem(slot, item)
+                }
+            }
     }
 
     private fun getPaginationCache(): Pair<InventoryGroupItemsCache, List<List<InventoryItemStack>>> {
