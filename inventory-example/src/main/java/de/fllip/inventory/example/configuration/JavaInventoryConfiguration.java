@@ -107,7 +107,7 @@ public class JavaInventoryConfiguration extends AbstractInventoryConfiguration {
 
         configureSection("paginationNext", new SectionConfigurator()
                 .withDynamicItem((inventory, player) -> {
-                    if (!inventory.hasPreviousPage()) {
+                    if (!inventory.hasNextPage()) {
                         return new InventoryItemStack(Material.RED_STAINED_GLASS_PANE)
                                 .withDisplayName("§cNext page");
                     } else {
