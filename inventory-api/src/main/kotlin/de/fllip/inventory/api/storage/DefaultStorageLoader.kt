@@ -48,7 +48,10 @@ class DefaultStorageLoader @Inject constructor(
     override fun loadFile(inventoryName: String): InventoryFile {
         val inputStream = this.javaClass.classLoader.getResourceAsStream("$inventoryName.json")
 
-        return objectMapper.readValue(inputStream, InventoryFile::class.java)
+        val value = objectMapper.readValue(inputStream, InventoryFile::class.java)
+
+        inputStream.close()
+        return value
     }
 
     override fun loadOrGetFile(inventoryName: String): InventoryFile {
