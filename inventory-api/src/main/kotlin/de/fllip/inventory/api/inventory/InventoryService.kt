@@ -69,7 +69,7 @@ class InventoryService @Inject constructor(
     }
 
     private fun createBukkitInventory(player: Player, inventoryInformation: InventoryInformation): Inventory {
-        val inventory = Inventory(player, inventoryInformation)
+        val inventory = Inventory(javaPlugin, player, inventoryInformation)
         inventory.create()
 
         inventories.add(InventoryCache(player, inventoryInformation.inventoryName, inventory))

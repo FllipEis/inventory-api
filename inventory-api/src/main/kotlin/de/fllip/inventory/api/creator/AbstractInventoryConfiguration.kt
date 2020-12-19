@@ -26,6 +26,7 @@ package de.fllip.inventory.api.creator
 
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
+import de.fllip.inventory.api.async.DataSupplier
 import de.fllip.inventory.api.inventory.Inventory
 import de.fllip.inventory.api.replacement.PlaceholderReplacement
 import de.fllip.inventory.api.result.InventoryClickEventResult
@@ -66,7 +67,7 @@ abstract class AbstractInventoryConfiguration {
         var stateHandler: Consumer<InventoryStateSwitchResult>? = null
         var firstState: ((Player) -> String)? = null
         var dynamicItem: ((Inventory, Player) -> InventoryItemStack)? = null
-        var groupItems: ((Player) -> List<InventoryItemStack>)? = null
+        var dataSupplier: DataSupplier<*>? = null
         val placeholders = Lists.newArrayList<PlaceholderReplacement>()!!
 
         fun withEventHandler(handleEvent: (InventoryClickEventResult) -> InventoryClickResult): SectionConfigurator {
@@ -100,7 +101,19 @@ abstract class AbstractInventoryConfiguration {
         }
 
         fun withGroupItems(handleSet: (Player) -> List<InventoryItemStack>): SectionConfigurator {
-            groupItems = handleSet
+            return withGroupItems(
+                DataSupplier<InventoryItemStack>()
+                    .withData {
+                        handleSet.invoke(it)
+                    }
+                    .withInventoryItemStackMapper {
+                        it
+                    }
+            )
+        }
+
+        fun <T: Any> withGroupItems(supplier: DataSupplier<T>): SectionConfigurator {
+            dataSupplier = supplier
 
             return this
         }

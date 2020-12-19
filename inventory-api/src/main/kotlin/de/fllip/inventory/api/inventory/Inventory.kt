@@ -33,6 +33,8 @@ import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.plugin.java.JavaPlugin
+import java.util.concurrent.CompletableFuture
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,6 +43,7 @@ import org.bukkit.inventory.Inventory
  * Time: 12:48
  */
 class Inventory(
+    private val javaPlugin: JavaPlugin,
     private val player: Player,
     val inventoryInformation: InventoryInformation
 ) {
@@ -49,44 +52,59 @@ class Inventory(
     var currentPage = 1
     private val paginationInformation = inventoryInformation.inventoryFile.pagination
 
+    private val cachedGroupItems = Maps.newHashMap<String, List<InventoryItemStack>>()
+    private val futureCache = Lists.newArrayList<CompletableFuture<*>>()
     private val items = Maps.newHashMap<Int, InventoryItemStack>()
     private val groupItems = Lists.newArrayList<InventoryGroupItemsCache>()
 
     fun create() {
-        val titlePlaceholders = inventoryInformation.inventoryConfiguration.titlePlaceholders
-        val title = inventoryInformation.inventoryFile.title
-
         bukkitInventory = Bukkit.createInventory(
             player,
             inventoryInformation.inventoryFile.type.slots,
-            PlaceholderReplacer.replace(title, player, this, titlePlaceholders)
+            "§cLoading..."
         )
     }
 
     fun open() {
-        if (currentPage == 0) {
-            return open(1)
-        }
-
-        open(currentPage)
+        open(1)
     }
 
     fun open(page: Int) {
         currentPage = page
 
+        cachedGroupItems.clear()
         bukkitInventory.clear()
         setItems()
 
         player.openInventory(bukkitInventory)
+        updateTitle()
     }
 
     fun update(page: Int = currentPage) {
         currentPage = page
 
-        bukkitInventory.clear()
-        setItems()
 
-        player.updateInventory()
+        Bukkit.getScheduler().runTask(javaPlugin, Runnable {
+            bukkitInventory.clear()
+            setItems()
+
+            player.updateInventory()
+            updateTitle()
+        })
+    }
+
+    fun updateTitle() {
+        val type = inventoryInformation.inventoryFile.type
+        if (!areFuturesComplete()) {
+            InventoryTitle("§cLoading...")
+                .execute(player, type)
+        } else {
+            val titlePlaceholders = inventoryInformation.inventoryConfiguration.titlePlaceholders
+            val title = inventoryInformation.inventoryFile.title
+
+            InventoryTitle(PlaceholderReplacer.replace(title, player, this, titlePlaceholders))
+                .execute(player, type)
+        }
     }
 
     fun openNextPage() {
@@ -134,7 +152,23 @@ class Inventory(
     }
 
     fun getPages(): Int {
-        return getPaginationCache().second.size
+        return getPaginationCache()?.second?.size?: 1
+    }
+
+    fun addFutureCache(future: CompletableFuture<*>) {
+        futureCache.add(future)
+    }
+
+    fun areFuturesComplete(): Boolean {
+        return futureCache.isEmpty() || futureCache.all { it.isDone }
+    }
+
+    fun getCachedGroupItems(identifier: String): List<InventoryItemStack>? {
+        return cachedGroupItems[identifier]
+    }
+
+    fun addCachedGroupItems(identifier: String, items: List<InventoryItemStack>) {
+        cachedGroupItems[identifier] = items
     }
 
     private fun loadItems(vararg sortByTypes: InventorySectionType) {
@@ -163,9 +197,11 @@ class Inventory(
         if (paginationInformation.enabled) {
             val paginationCache = getPaginationCache()
 
-            if (paginationCache.second.isNotEmpty()) {
-                paginationCache.second[currentPage - 1].forEachIndexed { index, item ->
-                    bukkitInventory.setItem(paginationCache.first.slots[index], item)
+            if (paginationCache != null) {
+                if (paginationCache.second.isNotEmpty()) {
+                    paginationCache.second[currentPage - 1].forEachIndexed { index, item ->
+                        bukkitInventory.setItem(paginationCache.first.slots[index], item)
+                    }
                 }
             }
         }
@@ -180,8 +216,8 @@ class Inventory(
             }
     }
 
-    private fun getPaginationCache(): Pair<InventoryGroupItemsCache, List<List<InventoryItemStack>>> {
-        val cache = groupItems.first { it.identifier == paginationInformation.groupIdentifier }
+    private fun getPaginationCache(): Pair<InventoryGroupItemsCache, List<List<InventoryItemStack>>>? {
+        val cache = groupItems.firstOrNull { it.identifier == paginationInformation.groupIdentifier }?: return null
         val chunked = cache.items.chunked(cache.slots.size)
 
         return Pair(cache, chunked)

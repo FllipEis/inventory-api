@@ -28,7 +28,9 @@ import de.fllip.inventory.api.creator.AbstractInventoryConfiguration
 import de.fllip.inventory.api.inventory.Inventory
 import de.fllip.inventory.api.section.AbstractInventorySection
 import de.fllip.inventory.api.section.InventorySectionType
+import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletableFuture
 
 /**
  * Created by IntelliJ IDEA.
@@ -48,9 +50,34 @@ class GroupInventorySection(
         player: Player,
         sectionConfigurator: AbstractInventoryConfiguration.SectionConfigurator?
     ) {
-        val items = sectionConfigurator?.groupItems?.invoke(player)
-            ?.map { it.withIdentifier(identifier) } ?: emptyList()
+        val cache = inventory.getCachedGroupItems(identifier)
 
+        if (cache != null) {
+            addItems(inventory, cache)
+            return
+        }
+
+        val dataSupplier = sectionConfigurator?.dataSupplier?: return
+        val asyncHandler = dataSupplier.asyncHandler?: return
+        val itemStackMapper = dataSupplier.itemStackMapper?: return
+        val future = CompletableFuture.supplyAsync {
+            asyncHandler.invoke(player)
+        }
+
+        inventory.addFutureCache(future)
+
+        future.thenAccept { list ->
+            val items = list.map {
+                itemStackMapper.invoke(it)
+                    .withIdentifier(identifier)
+            }
+
+            inventory.addCachedGroupItems(identifier, items)
+            inventory.update()
+        }
+    }
+
+    private fun addItems(inventory: Inventory, items: List<InventoryItemStack>) {
         val inventorySlots = if (slotRange) {
             slots.chunked(2)
                 .flatMap { IntRange(it.first(), it.last()).toList() }
