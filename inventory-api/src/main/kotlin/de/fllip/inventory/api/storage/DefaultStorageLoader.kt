@@ -25,12 +25,13 @@
 package de.fllip.inventory.api.storage
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import de.fllip.inventory.api.file.InventoryFile
+import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import java.util.jar.JarFile
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,17 +41,24 @@ import java.io.File
  */
 class DefaultStorageLoader @Inject constructor(
     @Named("inventoryapi")
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val javaPlugin: JavaPlugin
 ) : IStorageLoader {
 
     private val files = Maps.newHashMap<String, InventoryFile>()
 
     override fun loadFile(inventoryName: String): InventoryFile {
-        val inputStream = this.javaClass.classLoader.getResourceAsStream("$inventoryName.json")
+        val getFileMethod = JavaPlugin::class.java.getDeclaredMethod("getFile")
+        getFileMethod.isAccessible = true
+        val file = getFileMethod.invoke(javaPlugin) as File
+
+        val jarFile = JarFile(file)
+        val jarEntry = jarFile.getJarEntry("$inventoryName.json")
+        val inputStream = jarFile.getInputStream(jarEntry)
 
         val value = objectMapper.readValue(inputStream, InventoryFile::class.java)
+        jarFile.close()
 
-        inputStream.close()
         return value
     }
 
