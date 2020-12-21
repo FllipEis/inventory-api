@@ -92,6 +92,7 @@ class Inventory(
 
         Bukkit.getScheduler().runTask(javaPlugin, Runnable {
             bukkitInventory.clear()
+            cachedGroupItems.clear()
             setItems()
 
             player.updateInventory()
@@ -123,6 +124,10 @@ class Inventory(
         if (hasPreviousPage()) {
             update(currentPage - 1)
         }
+    }
+
+    fun clearCachedGroup(groupIdentifier: String) {
+        cachedGroupItems.remove(groupIdentifier)
     }
 
     fun setItem(slot: Int, item: InventoryItemStack) {
