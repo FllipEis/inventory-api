@@ -45,7 +45,8 @@ import java.util.concurrent.CompletableFuture
 class Inventory(
     private val javaPlugin: JavaPlugin,
     private val player: Player,
-    val inventoryInformation: InventoryInformation
+    val inventoryInformation: InventoryInformation,
+    private val service: InventoryService
 ) {
 
     lateinit var bukkitInventory: Inventory
@@ -81,6 +82,11 @@ class Inventory(
     }
 
     fun update(page: Int = currentPage) {
+        val openedInventory = service.getOpenedInventory(player)
+        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName == inventoryInformation.inventoryName) {
+            return
+        }
+
         currentPage = page
 
 
@@ -152,7 +158,7 @@ class Inventory(
     }
 
     fun getPages(): Int {
-        val size = getPaginationCache()?.second?.size ?: 1
+        val size = getPaginationCache(paginationInformation.groupIdentifier)?.second?.size ?: 1
         return if (size == 0) 1 else size
     }
 
@@ -196,7 +202,7 @@ class Inventory(
         }
 
         if (paginationInformation.enabled) {
-            val paginationCache = getPaginationCache()
+            val paginationCache = getPaginationCache(paginationInformation.groupIdentifier)
 
             if (paginationCache != null) {
                 if (paginationCache.second.isNotEmpty()) {
@@ -210,15 +216,20 @@ class Inventory(
         groupItems
             .filter { if (paginationInformation.enabled) it.identifier != paginationInformation.groupIdentifier else true }
             .forEach { cache ->
-                cache.slots.forEachIndexed { index, slot ->
-                    val item = cache.items.getOrNull(index) ?: return@forEach
-                    bukkitInventory.setItem(slot, item)
+                val paginationCache = getPaginationCache(cache.identifier)
+
+                if (paginationCache != null) {
+                    if (paginationCache.second.isNotEmpty()) {
+                        paginationCache.second[currentPage - 1].forEachIndexed { index, item ->
+                            bukkitInventory.setItem(paginationCache.first.slots[index], item)
+                        }
+                    }
                 }
             }
     }
 
-    private fun getPaginationCache(): Pair<InventoryGroupItemsCache, List<List<InventoryItemStack>>>? {
-        val cache = groupItems.firstOrNull { it.identifier == paginationInformation.groupIdentifier }?: return null
+    private fun getPaginationCache(groupIdentifier: String): Pair<InventoryGroupItemsCache, List<List<InventoryItemStack>>>? {
+        val cache = groupItems.firstOrNull { it.identifier == groupIdentifier } ?: return null
         val chunked = cache.items.chunked(cache.slots.size)
 
         return Pair(cache, chunked)
