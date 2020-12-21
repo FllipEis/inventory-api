@@ -152,7 +152,8 @@ class Inventory(
     }
 
     fun getPages(): Int {
-        return getPaginationCache()?.second?.size?: 1
+        val size = getPaginationCache()?.second?.size ?: 1
+        return if (size == 0) 1 else size
     }
 
     fun addFutureCache(future: CompletableFuture<*>) {

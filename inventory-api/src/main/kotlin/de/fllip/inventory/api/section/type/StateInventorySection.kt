@@ -28,6 +28,7 @@ import de.fllip.inventory.api.creator.AbstractInventoryConfiguration
 import de.fllip.inventory.api.inventory.Inventory
 import de.fllip.inventory.api.replacement.PlaceholderReplacer
 import de.fllip.inventory.api.section.AbstractInventorySection
+import de.fllip.inventory.api.section.InventorySectionExtra
 import de.fllip.inventory.api.section.InventorySectionType
 import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import de.fllip.inventory.api.section.state.InventoryStateHelper
@@ -44,7 +45,8 @@ class StateInventorySection(
     identifier: String = "",
     type: InventorySectionType = InventorySectionType.STATE,
     slots: List<Int> = emptyList(),
-    val states: List<InventoryStateInformation> = emptyList()
+    val states: List<InventoryStateInformation> = emptyList(),
+    val extras: Map<InventorySectionExtra, String> = emptyMap()
 ) : AbstractInventorySection(identifier, slots) {
 
     override fun setItem(
@@ -63,6 +65,7 @@ class StateInventorySection(
             .withNBTTag("inventory-item-state", currentState.stateName)
             .withDisplayName(PlaceholderReplacer.replace(currentState.displayName, player, inventory, replacements))
             .withLore(currentState.loreLines.map { PlaceholderReplacer.replace(it, player, inventory, replacements) })
+            .withExtras(extras)
 
         slots.forEach {
             inventory.setItem(it, item)
