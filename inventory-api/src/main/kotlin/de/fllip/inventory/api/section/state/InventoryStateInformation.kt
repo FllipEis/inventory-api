@@ -24,6 +24,7 @@
 
 package de.fllip.inventory.api.section.state
 
+import de.fllip.inventory.api.section.InventorySectionExtra
 import org.bukkit.Material
 
 /**
@@ -37,5 +38,6 @@ data class InventoryStateInformation(
     val material: Material = Material.AIR,
     val displayName: String = "",
     val amount: Int = 1,
-    val loreLines: List<String> = emptyList()
+    val loreLines: List<String> = emptyList(),
+    val extras: Map<InventorySectionExtra, String> = emptyMap()
 )

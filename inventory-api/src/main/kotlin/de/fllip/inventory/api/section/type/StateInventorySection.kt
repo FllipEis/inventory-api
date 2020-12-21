@@ -45,8 +45,7 @@ class StateInventorySection(
     identifier: String = "",
     type: InventorySectionType = InventorySectionType.STATE,
     slots: List<Int> = emptyList(),
-    val states: List<InventoryStateInformation> = emptyList(),
-    val extras: Map<InventorySectionExtra, String> = emptyMap()
+    val states: List<InventoryStateInformation> = emptyList()
 ) : AbstractInventorySection(identifier, slots) {
 
     override fun setItem(
@@ -65,7 +64,7 @@ class StateInventorySection(
             .withNBTTag("inventory-item-state", currentState.stateName)
             .withDisplayName(PlaceholderReplacer.replace(currentState.displayName, player, inventory, replacements))
             .withLore(currentState.loreLines.map { PlaceholderReplacer.replace(it, player, inventory, replacements) })
-            .withExtras(extras)
+            .withExtras(currentState.extras)
 
         slots.forEach {
             inventory.setItem(it, item)
