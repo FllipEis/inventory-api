@@ -83,7 +83,7 @@ class Inventory(
 
     fun update(page: Int = currentPage) {
         val openedInventory = service.getOpenedInventory(player)
-        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName == inventoryInformation.inventoryName) {
+        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
             return
         }
 
