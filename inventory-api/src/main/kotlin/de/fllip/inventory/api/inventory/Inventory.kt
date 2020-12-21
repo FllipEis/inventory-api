@@ -71,6 +71,11 @@ class Inventory(
     }
 
     fun open(page: Int) {
+        val openedInventory = service.getOpenedInventory(player)
+        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
+            return
+        }
+
         currentPage = page
 
         cachedGroupItems.clear()
