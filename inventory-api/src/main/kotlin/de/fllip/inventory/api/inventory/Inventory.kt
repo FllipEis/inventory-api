@@ -92,7 +92,6 @@ class Inventory(
 
         Bukkit.getScheduler().runTask(javaPlugin, Runnable {
             bukkitInventory.clear()
-            cachedGroupItems.clear()
             setItems()
 
             player.updateInventory()
