@@ -34,7 +34,6 @@ import de.fllip.inventory.api.listener.InventoryListener
 import de.fllip.inventory.api.module.InventoryModule
 import de.fllip.inventory.api.storage.DefaultStorageLoader
 import de.fllip.inventory.api.storage.IStorageLoader
-import de.tr7zw.changeme.nbtapi.data.NBTData
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -70,6 +69,28 @@ class InventoryAPI @Inject constructor(
         @JvmStatic
         fun register(injector: Injector, javaPlugin: JavaPlugin) {
             Bukkit.getPluginManager().registerEvents(injector.getInstance(InventoryListener::class.java), javaPlugin)
+
+            val inventoryService = injector.getInstance(InventoryService::class.java)
+
+            var currentTick = 0
+
+            Bukkit.getScheduler().runTaskTimer(javaPlugin, Runnable {
+                inventoryService.inventories
+                    .filter {
+                        val taskInformation =
+                            it.inventory.inventoryInformation.inventoryConfiguration.taskInformation
+                        it.inventory.isOpened() && taskInformation != null && currentTick % taskInformation.ticks == 1L
+                    }
+                    .forEach {
+                        val inventory = it.inventory
+                        val callback = inventory.inventoryInformation.inventoryConfiguration.taskInformation!!.callback
+                        callback?.accept(inventory)
+
+                        inventory.update()
+                    }
+
+                currentTick++
+            }, 1, 1)
         }
     }
 

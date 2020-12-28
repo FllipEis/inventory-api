@@ -44,7 +44,7 @@ import java.util.concurrent.CompletableFuture
  */
 class Inventory(
     private val javaPlugin: JavaPlugin,
-    private val player: Player,
+    val player: Player,
     val inventoryInformation: InventoryInformation,
     private val service: InventoryService
 ) {
@@ -171,6 +171,10 @@ class Inventory(
         return if (size == 0) 1 else size
     }
 
+    fun isOpened(): Boolean {
+        return player.openInventory.topInventory == bukkitInventory
+    }
+
     fun addFutureCache(future: CompletableFuture<*>) {
         futureCache.add(future)
     }
@@ -200,6 +204,13 @@ class Inventory(
                     .inventoryConfiguration.getSectionConfigurators()[it.identifier]
 
                 it.setItem(this, player, itemConfigurator)
+
+                if (it.type == InventorySectionType.GROUP) {
+                    val pages = getPages()
+                    if (currentPage > pages) {
+                        currentPage = pages
+                    }
+                }
             }
     }
 

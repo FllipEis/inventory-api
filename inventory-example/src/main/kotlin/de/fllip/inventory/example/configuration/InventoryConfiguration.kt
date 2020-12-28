@@ -31,6 +31,7 @@ import de.fllip.inventory.api.result.InventoryClickResult
 import de.fllip.inventory.api.section.bukkit.InventoryItemStack
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 
 /**
@@ -39,12 +40,22 @@ import java.util.*
  * Date: 02.12.2020
  * Time: 19:05
  */
-class InventoryConfiguration : AbstractInventoryConfiguration() {
+class InventoryConfiguration(
+    private val plugin: JavaPlugin
+) : AbstractInventoryConfiguration() {
 
     override fun configure() {
         configureTitlePlaceholder(PlaceholderReplacement("name") { player, _ ->
             player.name
         })
+
+        configureOpeningHandler {
+            it.player.sendMessage("§7Open")
+        }
+
+        configureClosingHandler {
+            it.player.sendMessage("§7Closed")
+        }
 
         configureSection("bottle", SectionConfigurator()
             .withEventHandler {

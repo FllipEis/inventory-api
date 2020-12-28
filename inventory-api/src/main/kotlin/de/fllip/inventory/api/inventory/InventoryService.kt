@@ -29,6 +29,7 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import de.fllip.inventory.api.creator.InventoryCreator
 import de.fllip.inventory.api.creator.InventoryInformation
+import de.fllip.inventory.api.result.InventoryResult
 import de.fllip.inventory.api.section.state.InventoryStateHelper
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
@@ -47,7 +48,7 @@ class InventoryService @Inject constructor(
 ) {
 
 
-    private val inventories = Lists.newArrayList<InventoryCache>()
+    val inventories = Lists.newArrayList<InventoryCache>()
 
     fun openInventory(player: Player, inventoryName: String) {
         openInventory(player, inventoryName, null)
@@ -58,6 +59,7 @@ class InventoryService @Inject constructor(
             creator.inventories.firstOrNull { it.inventoryName.equals(inventoryName, true) } ?: return
         val inventory = getInventory(player, inventoryName) ?: createBukkitInventory(player, inventoryInformation)
 
+        inventoryInformation.inventoryConfiguration.openingHandler?.accept(InventoryResult(inventory, player))
 
         player.setMetadata("current-inventory", FixedMetadataValue(javaPlugin, inventoryName))
 

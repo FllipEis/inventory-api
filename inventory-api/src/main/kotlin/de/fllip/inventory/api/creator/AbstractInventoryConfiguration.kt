@@ -31,9 +31,13 @@ import de.fllip.inventory.api.inventory.Inventory
 import de.fllip.inventory.api.replacement.PlaceholderReplacement
 import de.fllip.inventory.api.result.InventoryClickEventResult
 import de.fllip.inventory.api.result.InventoryClickResult
+import de.fllip.inventory.api.result.InventoryResult
 import de.fllip.inventory.api.result.InventoryStateSwitchResult
 import de.fllip.inventory.api.section.bukkit.InventoryItemStack
+import de.fllip.inventory.api.task.TaskInformation
 import org.bukkit.entity.Player
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
 /**
@@ -46,8 +50,34 @@ abstract class AbstractInventoryConfiguration {
 
     private val sectionConfigurators = Maps.newHashMap<String, SectionConfigurator>()
     val titlePlaceholders = Lists.newArrayList<PlaceholderReplacement>()
+    var openingHandler: Consumer<InventoryResult>? = null
+    var closingHandler: Consumer<InventoryResult>? = null
+    var taskInformation: TaskInformation? = null
 
     abstract fun configure()
+
+    fun configureRepeatingTask(
+        callback: Consumer<Inventory>?,
+        ticks: Long
+    ) {
+        configureRepeatingTask(TaskInformation(callback, ticks))
+    }
+
+    fun configureRepeatingTask(taskInformation: TaskInformation) {
+        this.taskInformation = taskInformation
+    }
+
+    fun configureUpdater(ticks: Long) {
+        configureRepeatingTask(null, ticks)
+    }
+
+    fun configureOpeningHandler(handleOpening: Consumer<InventoryResult>) {
+        openingHandler = handleOpening
+    }
+
+    fun configureClosingHandler(handleClosing: Consumer<InventoryResult>) {
+        closingHandler = handleClosing
+    }
 
     fun configureTitlePlaceholder(placeholderReplacement: PlaceholderReplacement) {
         titlePlaceholders.add(placeholderReplacement)
@@ -112,7 +142,7 @@ abstract class AbstractInventoryConfiguration {
             )
         }
 
-        fun <T: Any> withGroupItems(supplier: DataSupplier<T>): SectionConfigurator {
+        fun <T : Any> withGroupItems(supplier: DataSupplier<T>): SectionConfigurator {
             dataSupplier = supplier
 
             return this

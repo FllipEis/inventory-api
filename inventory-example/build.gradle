@@ -1,3 +1,12 @@
 dependencies {
-    compile(project(":inventory-api"))
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile(project(":inventory-api")) {
+        transitive(false)
+    }
+    compileOnly "org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT"
+}
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
 }

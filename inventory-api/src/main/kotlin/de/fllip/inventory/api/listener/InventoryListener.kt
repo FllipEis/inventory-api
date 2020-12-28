@@ -30,6 +30,7 @@ import de.fllip.inventory.api.creator.InventoryCreator
 import de.fllip.inventory.api.inventory.InventoryService
 import de.fllip.inventory.api.result.InventoryClickEventResult
 import de.fllip.inventory.api.result.InventoryClickResult
+import de.fllip.inventory.api.result.InventoryResult
 import de.fllip.inventory.api.result.InventoryStateSwitchResult
 import de.fllip.inventory.api.section.bukkit.isStateItem
 import de.fllip.inventory.api.section.bukkit.toInventoryItemStack
@@ -38,9 +39,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 /**
@@ -110,6 +111,17 @@ class InventoryListener @Inject constructor(
                 event.isCancelled = true
                 inventory.update()
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun handleClose(event: InventoryCloseEvent) {
+        val player = event.player as? Player?: return
+        val bukkitInventory = event.inventory
+
+        val inventory = inventoryService.getOpenedInventory(player)?: return
+        if (bukkitInventory == inventory.bukkitInventory) {
+            inventory.inventoryInformation.inventoryConfiguration.closingHandler?.accept(InventoryResult(inventory, player))
         }
     }
 

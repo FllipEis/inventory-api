@@ -19,7 +19,6 @@ allprojects {
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib"
         compileOnly group: 'com.google.inject', name: 'guice', version: '4.1.0'
-        implementation "org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT"
     }
 
     compileKotlin {
@@ -31,12 +30,6 @@ allprojects {
         kotlinOptions {
             jvmTarget = "1.8"
         }
-    }
-
-    jar {
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-        from { configurations.compileOnly.collect { it.isDirectory() ? it : zipTree(it) } }
-        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
     }
 
 }
