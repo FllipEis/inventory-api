@@ -47,7 +47,7 @@ class InventorySectionDeserializer : StdDeserializer<AbstractInventorySection>(A
         val typeString = node.get("type")?.asText()?: InventorySectionType.NONE.toString()
         val type = InventorySectionType.valueOf(typeString)
 
-        val inventoryItem = objectMapper.readValue(node.toString(), type.inventoryClass) ?: EmptyInventorySection()
-        return inventoryItem
+        val inventorySection = objectMapper.readValue(node.toString(), type.inventoryClass) ?: EmptyInventorySection()
+        return inventorySection
     }
 }

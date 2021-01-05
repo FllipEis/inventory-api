@@ -24,11 +24,13 @@
 
 package de.fllip.inventory.api
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.Guice
 import com.google.inject.Inject
 import com.google.inject.Injector
 import com.google.inject.Singleton
 import de.fllip.inventory.api.creator.InventoryCreator
+import de.fllip.inventory.api.file.InventoryFile
 import de.fllip.inventory.api.inventory.InventoryService
 import de.fllip.inventory.api.listener.InventoryListener
 import de.fllip.inventory.api.module.InventoryModule
@@ -48,7 +50,8 @@ class InventoryAPI @Inject constructor(
     val storageLoader: IStorageLoader,
     val inventoryCreator: InventoryCreator,
     val inventoryService: InventoryService,
-    private val injector: Injector
+    private val injector: Injector,
+    private val objectMapper: ObjectMapper
 ) {
 
     companion object {
@@ -92,6 +95,10 @@ class InventoryAPI @Inject constructor(
                 currentTick++
             }, 1, 1)
         }
+    }
+
+    fun deserializeInventoryFileFromJsonString(jsonString: String): InventoryFile {
+        return objectMapper.readValue(jsonString, InventoryFile::class.java)
     }
 
 }
