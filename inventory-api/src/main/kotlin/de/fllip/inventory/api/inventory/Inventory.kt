@@ -188,7 +188,9 @@ class Inventory(
     }
 
     fun addCachedGroupItems(identifier: String, items: List<InventoryItemStack>) {
-        cachedGroupItems[identifier] = items
+        cachedGroupItems[identifier] = items.map {
+                it.withIdentifier(identifier)
+            }
     }
 
     private fun loadItems(vararg sortByTypes: InventorySectionType) {

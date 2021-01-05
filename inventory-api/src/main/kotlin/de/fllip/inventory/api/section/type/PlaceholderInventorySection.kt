@@ -40,6 +40,7 @@ import de.fllip.inventory.api.inventory.Inventory
  */
 class PlaceholderInventorySection(
     type: InventorySectionType = InventorySectionType.PLACEHOLDER,
+    val displayName: String? = null,
     val material: Material = Material.AIR,
     val slotRange: Boolean = false,
     slots: List<Int> = emptyList()
@@ -52,6 +53,10 @@ class PlaceholderInventorySection(
     ) {
         val item = InventoryItemStack(material)
             .withIdentifier("placeholder")
+
+        if (displayName != null) {
+            item.withDisplayName(displayName)
+        }
 
         val inventorySlots = if (slotRange) {
             slots.chunked(2)
