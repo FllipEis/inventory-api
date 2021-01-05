@@ -29,6 +29,7 @@ import com.google.inject.Guice
 import com.google.inject.Inject
 import com.google.inject.Injector
 import com.google.inject.Singleton
+import com.google.inject.name.Named
 import de.fllip.inventory.api.creator.InventoryCreator
 import de.fllip.inventory.api.file.InventoryFile
 import de.fllip.inventory.api.inventory.InventoryService
@@ -51,6 +52,7 @@ class InventoryAPI @Inject constructor(
     val inventoryCreator: InventoryCreator,
     val inventoryService: InventoryService,
     private val injector: Injector,
+    @Named("inventoryapi")
     private val objectMapper: ObjectMapper
 ) {
 
