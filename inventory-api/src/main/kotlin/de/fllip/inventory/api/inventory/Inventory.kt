@@ -78,15 +78,21 @@ class Inventory(
 
         currentPage = page
 
-        cachedGroupItems.clear()
-        bukkitInventory.clear()
-        setItems()
+        Bukkit.getScheduler().runTask(javaPlugin, Runnable {
+            cachedGroupItems.clear()
+            bukkitInventory.clear()
+            setItems()
 
-        player.openInventory(bukkitInventory)
-        updateTitle()
+            player.openInventory(bukkitInventory)
+            updateTitle()
+        })
     }
 
-    fun update(page: Int = currentPage) {
+    fun update() {
+        update(currentPage)
+    }
+
+    fun update(page: Int) {
         val openedInventory = service.getOpenedInventory(player)
         if (openedInventory == null || openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
             return
@@ -189,8 +195,8 @@ class Inventory(
 
     fun addCachedGroupItems(identifier: String, items: List<InventoryItemStack>) {
         cachedGroupItems[identifier] = items.map {
-                it.withIdentifier(identifier)
-            }
+            it.withIdentifier(identifier)
+        }
     }
 
     private fun loadItems(vararg sortByTypes: InventorySectionType) {
