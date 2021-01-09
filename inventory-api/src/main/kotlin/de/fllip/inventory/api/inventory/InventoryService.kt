@@ -63,11 +63,10 @@ class InventoryService @Inject constructor(
 
         player.setMetadata("current-inventory", FixedMetadataValue(javaPlugin, inventoryName))
 
-        if (page == null) {
+        if (page == null)
             inventory.open()
-            return
-        }
-        inventory.open(page)
+        else
+            inventory.open(page)
     }
 
     private fun createBukkitInventory(player: Player, inventoryInformation: InventoryInformation): Inventory {

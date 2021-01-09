@@ -53,7 +53,7 @@ class Inventory(
     var currentPage = 1
     private val paginationInformation = inventoryInformation.inventoryFile.pagination
 
-    private val cachedGroupItems = Maps.newHashMap<String, List<InventoryItemStack>>()
+    private val cachedGroupItems = Maps.newConcurrentMap<String, List<InventoryItemStack>>()
     private val futureCache = Lists.newArrayList<CompletableFuture<*>>()
     private val items = Maps.newHashMap<Int, InventoryItemStack>()
     private val groupItems = Lists.newArrayList<InventoryGroupItemsCache>()
@@ -72,7 +72,8 @@ class Inventory(
 
     fun open(page: Int) {
         val openedInventory = service.getOpenedInventory(player)
-        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
+        if (openedInventory == null ||
+            openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
             return
         }
 
@@ -94,7 +95,8 @@ class Inventory(
 
     fun update(page: Int) {
         val openedInventory = service.getOpenedInventory(player)
-        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
+        if (openedInventory == null ||
+            openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
             return
         }
 
