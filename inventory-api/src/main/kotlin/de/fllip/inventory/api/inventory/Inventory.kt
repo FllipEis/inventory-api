@@ -95,22 +95,6 @@ class Inventory(
         openBukkitInventory()
     }
 
-    private fun openBukkitInventory() {
-        if (Bukkit.isPrimaryThread()) {
-            player.openInventory(bukkitInventory)
-            updateTitle()
-        } else {
-            Bukkit.getScheduler().runTask(javaPlugin, Runnable {
-                player.openInventory(bukkitInventory)
-
-                Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, Runnable {
-                    updateTitle()
-                })
-
-            })
-        }
-    }
-
     fun updateTitle() {
         val type = inventoryInformation.inventoryFile.type
         if (!areFuturesComplete()) {
@@ -264,4 +248,19 @@ class Inventory(
         return Pair(cache, chunked)
     }
 
+    private fun openBukkitInventory() {
+        if (Bukkit.isPrimaryThread()) {
+            player.openInventory(bukkitInventory)
+            updateTitle()
+        } else {
+            Bukkit.getScheduler().runTask(javaPlugin, Runnable {
+                player.openInventory(bukkitInventory)
+
+                Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, Runnable {
+                    updateTitle()
+                })
+
+            })
+        }
+    }
 }
