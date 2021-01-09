@@ -71,22 +71,7 @@ class Inventory(
     }
 
     fun open(page: Int) {
-        val openedInventory = service.getOpenedInventory(player)
-        if (openedInventory == null ||
-            openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
-            return
-        }
-
-        currentPage = page
-
-        Bukkit.getScheduler().runTask(javaPlugin, Runnable {
-            cachedGroupItems.clear()
-            bukkitInventory.clear()
-            setItems()
-
-            player.openInventory(bukkitInventory)
-            updateTitle()
-        })
+        update(page)
     }
 
     fun update() {
@@ -96,19 +81,24 @@ class Inventory(
     fun update(page: Int) {
         val openedInventory = service.getOpenedInventory(player)
         if (openedInventory == null ||
-            openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
+            openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName
+        ) {
             return
         }
 
         currentPage = page
 
+        cachedGroupItems.clear()
+        bukkitInventory.clear()
+        setItems()
 
         Bukkit.getScheduler().runTask(javaPlugin, Runnable {
-            bukkitInventory.clear()
-            setItems()
+            player.openInventory(bukkitInventory)
 
-            player.updateInventory()
-            updateTitle()
+            Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, Runnable {
+                updateTitle()
+            })
+
         })
     }
 
