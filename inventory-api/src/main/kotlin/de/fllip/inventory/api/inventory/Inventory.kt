@@ -95,7 +95,7 @@ class Inventory(
         openBukkitInventory()
     }
 
-    fun openBukkitInventory() {
+    private fun openBukkitInventory() {
         if (Bukkit.isPrimaryThread()) {
             player.openInventory(bukkitInventory)
             updateTitle()
