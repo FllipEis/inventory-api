@@ -92,14 +92,23 @@ class Inventory(
         bukkitInventory.clear()
         setItems()
 
-        Bukkit.getScheduler().runTask(javaPlugin, Runnable {
+        openBukkitInventory()
+    }
+
+    fun openBukkitInventory() {
+        if (Bukkit.isPrimaryThread()) {
             player.openInventory(bukkitInventory)
+            updateTitle()
+        } else {
+            Bukkit.getScheduler().runTask(javaPlugin, Runnable {
+                player.openInventory(bukkitInventory)
 
-            Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, Runnable {
-                updateTitle()
+                Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, Runnable {
+                    updateTitle()
+                })
+
             })
-
-        })
+        }
     }
 
     fun updateTitle() {
