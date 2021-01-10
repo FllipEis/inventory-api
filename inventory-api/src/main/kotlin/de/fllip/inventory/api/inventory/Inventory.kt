@@ -53,7 +53,7 @@ class Inventory(
     var currentPage = 1
     private val paginationInformation = inventoryInformation.inventoryFile.pagination
 
-    private val cachedGroupItems = Maps.newConcurrentMap<String, List<InventoryItemStack>>()
+    private val cachedGroupItems = Maps.newHashMap<String, List<InventoryItemStack>>()
     private val futureCache = Lists.newArrayList<CompletableFuture<*>>()
     private val items = Maps.newHashMap<Int, InventoryItemStack>()
     private val groupItems = Lists.newArrayList<InventoryGroupItemsCache>()
@@ -71,7 +71,21 @@ class Inventory(
     }
 
     fun open(page: Int) {
-        update(page)
+        val openedInventory = service.getOpenedInventory(player)
+        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
+            return
+        }
+
+        currentPage = page
+
+        Bukkit.getScheduler().runTask(javaPlugin, Runnable {
+            cachedGroupItems.clear()
+            bukkitInventory.clear()
+            setItems()
+
+            player.openInventory(bukkitInventory)
+            updateTitle()
+        })
     }
 
     fun update() {
@@ -80,19 +94,20 @@ class Inventory(
 
     fun update(page: Int) {
         val openedInventory = service.getOpenedInventory(player)
-        if (openedInventory == null ||
-            openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName
-        ) {
+        if (openedInventory == null || openedInventory.inventoryInformation.inventoryName != inventoryInformation.inventoryName) {
             return
         }
 
         currentPage = page
 
-        cachedGroupItems.clear()
-        bukkitInventory.clear()
-        setItems()
 
-        openBukkitInventory()
+        Bukkit.getScheduler().runTask(javaPlugin, Runnable {
+            bukkitInventory.clear()
+            setItems()
+
+            player.updateInventory()
+            updateTitle()
+        })
     }
 
     fun updateTitle() {
@@ -248,19 +263,4 @@ class Inventory(
         return Pair(cache, chunked)
     }
 
-    private fun openBukkitInventory() {
-        if (Bukkit.isPrimaryThread()) {
-            player.openInventory(bukkitInventory)
-            updateTitle()
-        } else {
-            Bukkit.getScheduler().runTask(javaPlugin, Runnable {
-                player.openInventory(bukkitInventory)
-
-                Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, Runnable {
-                    updateTitle()
-                })
-
-            })
-        }
-    }
 }
