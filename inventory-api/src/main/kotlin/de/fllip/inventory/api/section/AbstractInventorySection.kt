@@ -27,6 +27,7 @@ package de.fllip.inventory.api.section
 import de.fllip.inventory.api.creator.AbstractInventoryConfiguration
 import org.bukkit.entity.Player
 import de.fllip.inventory.api.inventory.Inventory
+import org.bukkit.Bukkit
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,5 +42,10 @@ abstract class AbstractInventorySection(
 ) {
 
     abstract fun setItem(inventory: Inventory, player: Player, sectionConfigurator: AbstractInventoryConfiguration.SectionConfigurator?)
+
+    fun getCustomSlots(player: Player, sectionConfigurator: AbstractInventoryConfiguration.SectionConfigurator?): List<Int> {
+        val customSlots = sectionConfigurator?.customSlotsHandler?.invoke(player)?: return slots
+        return if (customSlots.isEmpty()) this.slots else customSlots
+    }
 
 }

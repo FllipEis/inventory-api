@@ -64,7 +64,7 @@ class StaticInventorySection(
             .withLore(loreLines.map { PlaceholderReplacer.replace(it, player, inventory, replacements) })
             .withExtras(extras)
 
-        slots.forEach {
+        getCustomSlots(player, sectionConfigurator).forEach {
             inventory.setItem(it, item)
         }
     }

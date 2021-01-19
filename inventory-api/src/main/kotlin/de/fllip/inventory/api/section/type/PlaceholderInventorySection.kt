@@ -58,6 +58,8 @@ class PlaceholderInventorySection(
             item.withDisplayName(displayName)
         }
 
+        val slots = getCustomSlots(player, sectionConfigurator)
+
         val inventorySlots = if (slotRange) {
             slots.chunked(2)
                 .flatMap { IntRange(it.first(), it.last()).toList() }

@@ -53,13 +53,13 @@ class GroupInventorySection(
         val cache = inventory.getCachedGroupItems(identifier)
 
         if (cache != null) {
-            addItems(inventory, cache)
+            addItems(player, inventory, cache, sectionConfigurator)
             return
         }
 
-        val dataSupplier = sectionConfigurator?.dataSupplier?: return
-        val asyncHandler = dataSupplier.asyncHandler?: return
-        val itemStackMapper = dataSupplier.itemStackMapper?: return
+        val dataSupplier = sectionConfigurator?.dataSupplier ?: return
+        val asyncHandler = dataSupplier.asyncHandler ?: return
+        val itemStackMapper = dataSupplier.itemStackMapper ?: return
         val future = CompletableFuture.supplyAsync {
             asyncHandler.invoke(player)
         }
@@ -77,7 +77,14 @@ class GroupInventorySection(
         }
     }
 
-    private fun addItems(inventory: Inventory, items: List<InventoryItemStack>) {
+    private fun addItems(
+        player: Player,
+        inventory: Inventory,
+        items: List<InventoryItemStack>,
+        sectionConfigurator: AbstractInventoryConfiguration.SectionConfigurator?
+    ) {
+        val slots = getCustomSlots(player, sectionConfigurator)
+
         val inventorySlots = if (slotRange) {
             slots.chunked(2)
                 .flatMap { IntRange(it.first(), it.last()).toList() }

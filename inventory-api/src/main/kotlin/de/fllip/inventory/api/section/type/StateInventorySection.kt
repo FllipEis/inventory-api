@@ -66,7 +66,7 @@ class StateInventorySection(
             .withLore(currentState.loreLines.map { PlaceholderReplacer.replace(it, player, inventory, replacements) })
             .withExtras(currentState.extras)
 
-        slots.forEach {
+        getCustomSlots(player, sectionConfigurator).forEach {
             inventory.setItem(it, item)
         }
     }

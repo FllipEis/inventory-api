@@ -99,6 +99,7 @@ abstract class AbstractInventoryConfiguration {
         var dynamicItem: ((Inventory, Player) -> InventoryItemStack)? = null
         var dataSupplier: DataSupplier<*>? = null
         val placeholders = Lists.newArrayList<PlaceholderReplacement>()!!
+        var customSlotsHandler: ((Player) -> List<Int>) = { emptyList() }
 
         fun withEventHandler(handleEvent: (InventoryClickEventResult) -> InventoryClickResult): SectionConfigurator {
             eventHandler = handleEvent
@@ -144,6 +145,12 @@ abstract class AbstractInventoryConfiguration {
 
         fun <T : Any> withGroupItems(supplier: DataSupplier<T>): SectionConfigurator {
             dataSupplier = supplier
+
+            return this
+        }
+
+        fun withCustomSlots(customSlotsHandler: (Player) -> List<Int>): SectionConfigurator {
+            this.customSlotsHandler = customSlotsHandler
 
             return this
         }
