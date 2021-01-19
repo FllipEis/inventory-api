@@ -36,6 +36,7 @@ import de.fllip.inventory.api.type.InventoryType
  */
 data class InventoryFile(
     val title: String = "",
+    val loadingTitle: String = "§cLoading...",
     val type: InventoryType = InventoryType.NONE,
     val pagination: PaginationInformation = PaginationInformation(),
     val sections: List<AbstractInventorySection> = emptyList()

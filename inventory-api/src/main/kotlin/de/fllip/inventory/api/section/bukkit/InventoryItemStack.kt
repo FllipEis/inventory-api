@@ -51,6 +51,10 @@ class InventoryItemStack(
 
     companion object {
         fun fromItemStack(itemStack: ItemStack?): InventoryItemStack? {
+            if (itemStack?.type == Material.AIR) {
+                return null
+            }
+
             val serialize = itemStack?.serialize() ?: return null
             return deserialize(serialize)
         }

@@ -30,6 +30,7 @@ import de.fllip.inventory.api.creator.InventoryInformation
 import de.fllip.inventory.api.replacement.PlaceholderReplacer
 import de.fllip.inventory.api.section.InventorySectionType
 import de.fllip.inventory.api.section.bukkit.InventoryItemStack
+import de.fllip.inventory.api.section.type.GroupInventorySection
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -56,13 +57,15 @@ class Inventory(
     private val cachedGroupItems = Maps.newHashMap<String, List<InventoryItemStack>>()
     private val futureCache = Lists.newArrayList<CompletableFuture<*>>()
     private val items = Maps.newHashMap<Int, InventoryItemStack>()
+    private val groupItemSlots = Lists.newArrayList<Int>()
     private val groupItems = Lists.newArrayList<InventoryGroupItemsCache>()
 
     fun create() {
+        val inventoryFile = inventoryInformation.inventoryFile
         bukkitInventory = Bukkit.createInventory(
             player,
-            inventoryInformation.inventoryFile.type.slots,
-            "§cLoading..."
+            inventoryFile.type.slots,
+            inventoryFile.loadingTitle
         )
     }
 
@@ -79,12 +82,12 @@ class Inventory(
         currentPage = page
 
         Bukkit.getScheduler().runTask(javaPlugin, Runnable {
-            cachedGroupItems.clear()
-            bukkitInventory.clear()
-            setItems()
-
             player.openInventory(bukkitInventory)
-            updateTitle()
+
+            Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, Runnable {
+                cachedGroupItems.clear()
+                update()
+            })
         })
     }
 
@@ -100,24 +103,28 @@ class Inventory(
 
         currentPage = page
 
+        val typesToSet = arrayOf(InventorySectionType.GROUP, InventorySectionType.DYNAMIC, InventorySectionType.STATE)
 
-        Bukkit.getScheduler().runTask(javaPlugin, Runnable {
-            bukkitInventory.clear()
-            setItems()
+        setItems(*typesToSet)
+        clearOldItems()
 
-            player.updateInventory()
-            updateTitle()
-        })
+        player.updateInventory()
+        updateTitle()
     }
 
     fun updateTitle() {
-        val type = inventoryInformation.inventoryFile.type
+        if (player.openInventory.topInventory != bukkitInventory) {
+            return
+        }
+
+        val inventoryFile = inventoryInformation.inventoryFile
+        val type = inventoryFile.type
         if (!areFuturesComplete()) {
-            InventoryTitle("§cLoading...")
+            InventoryTitle(inventoryFile.loadingTitle)
                 .execute(player, type)
         } else {
             val titlePlaceholders = inventoryInformation.inventoryConfiguration.titlePlaceholders
-            val title = inventoryInformation.inventoryFile.title
+            val title = inventoryFile.title
 
             InventoryTitle(PlaceholderReplacer.replace(title, player, this, titlePlaceholders))
                 .execute(player, type)
@@ -199,57 +206,76 @@ class Inventory(
         }
     }
 
-    private fun loadItems(vararg sortByTypes: InventorySectionType) {
-        items.clear()
+    private fun loadItems(vararg types: InventorySectionType, sort: Boolean = true) {
         groupItems.clear()
 
-        val typeList = sortByTypes.toList()
+        val typeList = types.toList()
+
+        var sections = inventoryInformation.inventoryFile.sections
+
+        if (sort) {
+            sections = sections.sortedBy { !typeList.contains(it.type) }
+        } else {
+            sections = sections.filter { types.contains(it.type) }
+        }
+
+        sections.forEach {
+            val itemConfigurator = inventoryInformation
+                .inventoryConfiguration.getSectionConfigurators()[it.identifier]
+
+            it.setItem(this, player, itemConfigurator)
+
+            if (it.type == InventorySectionType.GROUP) {
+                val pages = getPages()
+                if (currentPage > pages) {
+                    currentPage = pages
+                }
+            }
+        }
+    }
+
+    private fun clearOldItems() {
+        if (!areFuturesComplete()) {
+            return
+        }
 
         inventoryInformation.inventoryFile.sections
-            .sortedBy { !typeList.contains(it.type) }
+            .filter { it.type == InventorySectionType.GROUP }
+            .flatMap { section ->
+                if ((section as GroupInventorySection).slotRange) {
+                    section.slots.chunked(2)
+                        .flatMap { IntRange(it.first(), it.last()).toList() }
+                } else section.slots
+            }
             .forEach {
-                val itemConfigurator = inventoryInformation
-                    .inventoryConfiguration.getSectionConfigurators()[it.identifier]
-
-                it.setItem(this, player, itemConfigurator)
-
-                if (it.type == InventorySectionType.GROUP) {
-                    val pages = getPages()
-                    if (currentPage > pages) {
-                        currentPage = pages
-                    }
+                if (!groupItemSlots.contains(it) && bukkitInventory.getItem(it) != null) {
+                    bukkitInventory.clear(it)
                 }
             }
     }
 
-    private fun setItems() {
-        loadItems(InventorySectionType.GROUP)
+    private fun setItems(vararg filterTypes: InventorySectionType = emptyArray()) {
+        groupItemSlots.clear()
+        if (filterTypes.isEmpty()) {
+            loadItems(InventorySectionType.GROUP)
+        } else {
+            loadItems(*filterTypes)
+        }
 
         items.forEach {
             bukkitInventory.setItem(it.key, it.value)
         }
 
-        if (paginationInformation.enabled) {
-            val paginationCache = getPaginationCache(paginationInformation.groupIdentifier)
-
-            if (paginationCache != null) {
-                if (paginationCache.second.isNotEmpty()) {
-                    paginationCache.second[currentPage - 1].forEachIndexed { index, item ->
-                        bukkitInventory.setItem(paginationCache.first.slots[index], item)
-                    }
-                }
-            }
-        }
-
         groupItems
-            .filter { if (paginationInformation.enabled) it.identifier != paginationInformation.groupIdentifier else true }
             .forEach { cache ->
                 val paginationCache = getPaginationCache(cache.identifier)
 
                 if (paginationCache != null) {
                     if (paginationCache.second.isNotEmpty()) {
                         paginationCache.second[currentPage - 1].forEachIndexed { index, item ->
-                            bukkitInventory.setItem(paginationCache.first.slots[index], item)
+                            val slot = paginationCache.first.slots[index]
+                            groupItemSlots.add(slot)
+                            bukkitInventory.setItem(slot, item)
                         }
                     }
                 }
