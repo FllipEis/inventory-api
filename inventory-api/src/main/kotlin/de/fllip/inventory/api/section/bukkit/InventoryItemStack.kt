@@ -112,6 +112,14 @@ class InventoryItemStack(
 
     }
 
+    init {
+        withNBTTag("uuid", UUID.randomUUID().toString())
+    }
+
+    fun getUniqueId(): UUID {
+        return UUID.fromString(getNBTTag("uuid"))
+    }
+
     fun withDisplayName(displayName: String): InventoryItemStack {
         val itemMeta = this.itemMeta!!
         itemMeta.setDisplayName(displayName)

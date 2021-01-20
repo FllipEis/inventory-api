@@ -220,6 +220,16 @@ class Inventory(
         }
     }
 
+    fun updateCachedGroupItem(identifier: String, itemStack: InventoryItemStack) {
+        val cachedGroupItemsList = cachedGroupItems[identifier]?.toMutableList()?: return
+
+        val index = cachedGroupItemsList.indexOfFirst { it.getUniqueId() == itemStack.getUniqueId() }
+        cachedGroupItemsList[index] = itemStack
+
+        cachedGroupItems[identifier] = cachedGroupItemsList
+        update()
+    }
+
     private fun loadItems(vararg types: InventorySectionType, sort: Boolean = true) {
         groupItems.clear()
 
