@@ -62,10 +62,19 @@ class Inventory(
 
     fun create() {
         val inventoryFile = inventoryInformation.inventoryFile
+
+        val loadingTitle = inventoryFile.loadingTitle
+        val title = loadingTitle ?: PlaceholderReplacer.replace(
+            inventoryFile.title,
+            player,
+            this,
+            inventoryInformation.inventoryConfiguration.titlePlaceholders
+        )
+
         bukkitInventory = Bukkit.createInventory(
             player,
             inventoryFile.type.slots,
-            inventoryFile.loadingTitle
+            title
         )
     }
 
@@ -118,6 +127,11 @@ class Inventory(
         }
 
         val inventoryFile = inventoryInformation.inventoryFile
+
+        if (inventoryFile.loadingTitle == null) {
+            return
+        }
+
         val type = inventoryFile.type
         if (!areFuturesComplete()) {
             InventoryTitle(inventoryFile.loadingTitle)
