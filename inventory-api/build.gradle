@@ -35,13 +35,14 @@ repositories {
 }
 
 dependencies {
-    implementation "com.fasterxml.jackson.core:jackson-core:2.9.8"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:2.9.8"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
-    compileOnly 'de.tr7zw:item-nbt-api:2.6.0'
-    compileOnly 'de.tr7zw:nbt-data-api:2.6.0'
-    compileOnly 'de.tr7zw:nbt-injector:2.6.0'
+    compileOnly "com.fasterxml.jackson.core:jackson-core:2.9.8"
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations:2.9.8"
+    compileOnly "com.fasterxml.jackson.core:jackson-databind:2.9.8"
+    compileOnly 'de.tr7zw:item-nbt-api:2.7.1'
+    compileOnly 'de.tr7zw:nbt-data-api:2.7.1'
+    compileOnly 'de.tr7zw:nbt-injector:2.7.1'
     compileOnly 'com.mojang:authlib:1.5.21'
+    compileOnly group: 'com.google.inject', name: 'guice', version: '4.1.0'
     api("org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT")
 }
 
@@ -55,4 +56,6 @@ shadowJar {
     configurations = [project.configurations.compile, project.configurations.compileOnly]
 
     relocate 'de.tr7zw.changeme.nbtapi', 'de.fllip.nbtapi'
+    relocate 'com.google.inject', 'de.fllip.inject'
+    relocate 'com.fasterxml.jackson.core', 'de.fllip.jackson.core'
 }
