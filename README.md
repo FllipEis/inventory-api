@@ -16,7 +16,9 @@ A file based inventory api for minecraft.
 	}
 
     dependencies {  
-	  compile('com.github.FllipEis.inventory-api:inventory-api:VERSION')  
+	  compile('com.github.FllipEis.inventory-api:inventory-api:VERSION') {
+		transitive(false)
+	    } 
 	}
 
 **Maven:**
