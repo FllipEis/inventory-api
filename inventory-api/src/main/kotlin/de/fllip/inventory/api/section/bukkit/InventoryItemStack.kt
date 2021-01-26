@@ -30,10 +30,12 @@ import de.fllip.inventory.api.section.InventorySectionExtra
 import de.tr7zw.changeme.nbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.material.MaterialData
+import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
 /**
@@ -47,7 +49,7 @@ class InventoryItemStack(
     amount: Int
 ) : ItemStack(material, amount) {
 
-    constructor(material: Material): this(material, 1)
+    constructor(material: Material) : this(material, 1)
 
     companion object {
         fun fromItemStack(itemStack: ItemStack?): InventoryItemStack? {
@@ -180,6 +182,29 @@ class InventoryItemStack(
 
     fun withIdentifier(identifier: String): InventoryItemStack {
         return this.withNBTTag("inventory-identifier", identifier)
+    }
+
+    fun <T, Z> withItemData(
+        nameSpacedKey: NamespacedKey,
+        persistenceDataType: PersistentDataType<T, Z>,
+        value: Z
+    ): InventoryItemStack {
+        val itemMeta = itemMeta!!
+
+        itemMeta.persistentDataContainer.set(nameSpacedKey, persistenceDataType, value)
+
+        this.itemMeta = itemMeta
+
+        return this
+    }
+
+    fun <T, Z> getItemData(
+        nameSpacedKey: NamespacedKey,
+        persistenceDataType: PersistentDataType<T, Z>
+    ): Z? {
+        val itemMeta = itemMeta!!
+
+        return itemMeta.persistentDataContainer.get(nameSpacedKey, persistenceDataType)
     }
 
     fun getIdentifier(): String {
